@@ -1,0 +1,23 @@
+# Engineer Jules Portfolio — Root .htaccess
+# Prevents direct access to sensitive folders when the project root itself
+# is used as the web root (not required if you point Apache's DocumentRoot
+# straight at /public, which is the recommended setup).
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
+
+# Block access to config, models, controllers, database and views directly
+RewriteRule ^config/ - [F,L]
+RewriteRule ^models/ - [F,L]
+RewriteRule ^controllers/ - [F,L]
+RewriteRule ^database/ - [F,L]
+RewriteRule ^views/ - [F,L]
+
+# Deny listing of uploads directory contents as PHP execution
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>

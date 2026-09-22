@@ -1,0 +1,21 @@
+﻿# Secrets / environment
+.env
+.env.*
+!.env.example
+
+# Local database credentials
+config/database.php
+
+# Runtime uploads
+uploads/*
+!uploads/.gitkeep
+!uploads/.htaccess
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
