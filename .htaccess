@@ -1,23 +1,30 @@
-# Engineer Jules Portfolio — Root .htaccess
-# Prevents direct access to sensitive folders when the project root itself
-# is used as the web root (not required if you point Apache's DocumentRoot
-# straight at /public, which is the recommended setup).
+# Engineer Jules Portfolio
+# Security rules for Apache when project root is used as web root.
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Block sensitive application directories.
+    RewriteRule ^(?:config|models|controllers|database|views)(?:/|$) - [F,L]
+
+    # Block hidden files and directories except .well-known.
+    RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,L]
+
+    # Block environment, backup and source-control files.
+    RewriteRule (^|/)(?:\.env(?:\..*)?|composer\.(?:json|lock)|package(?:-lock)?\.json|yarn\.lock|.*\.(?:sql|bak|backup|old|orig|save|swp))$ - [F,L,NC]
+
+    # Disable directory listing.
+    Options -Indexes
 </IfModule>
 
-# Block access to config, models, controllers, database and views directly
-RewriteRule ^config/ - [F,L]
-RewriteRule ^models/ - [F,L]
-RewriteRule ^controllers/ - [F,L]
-RewriteRule ^database/ - [F,L]
-RewriteRule ^views/ - [F,L]
+# Never allow Apache to execute PHP files inside uploads.
+<IfModule mod_mime.c>
+    RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8
+    RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8
+</IfModule>
 
-# Deny listing of uploads directory contents as PHP execution
-<IfModule mod_php7.c>
-    php_flag engine off
-</IfModule>
-<IfModule mod_php8.c>
-    php_flag engine off
-</IfModule>
+<FilesMatch "\.(?:php|phtml|php3|php4|php5|php7|php8)$">
+    <If "%{REQUEST_URI} =~ m#^/engineer-jules/uploads/#">
+        Require all denied
+    </If>
+</FilesMatch>
